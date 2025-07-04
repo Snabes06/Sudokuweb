@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <title>Sudoku Board</title>
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sudoku-wrapper">
+    <div class="number-picker">
+      <button class="num-button">1</button>
+      <button class="num-button">2</button>
+      <button class="num-button">3</button>
+      <button class="num-button">4</button>
+      <button class="num-button">5</button>
+      <button class="num-button">6</button>
+      <button class="num-button">7</button>
+      <button class="num-button">8</button>
+      <button class="num-button">9</button>
+      <button id="new-puzzle" class="num-button refresh-button" title="New Puzzle" aria-label="New Puzzle">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="#7bdcb5"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            viewBox="0 0 24 24">
+
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10" />
+        </svg>
+      </button>
+    </div>
+    <div class="sudoku-board"></div>
+  </div>
+  <script>
+    const board = document.querySelector(".sudoku-board");
+    let selectedNumber = "";
+
+    // Create 81 read-only inputs
+    for (let i = 0; i < 81; i++) {
+      const cell = document.createElement("input");
+      cell.type = "text";
+      cell.maxLength = 1;
+      cell.className = "sudoku-cell";
+      cell.readOnly = true;
+      board.appendChild(cell);
+    }
+
+    // Number picker logic
+    document.querySelectorAll(".num-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.id === "new-puzzle") {
+          generateNewPuzzle();
+          updateNumberPickerAvailability();
+          selectedNumber = "";
+          document.querySelectorAll(".num-button").forEach((btn) =>
+            btn.classList.remove("active")
+          );
+          return;
+        }
+        selectedNumber = button.textContent;
+        document.querySelectorAll(".num-button").forEach((btn) =>
+          btn.classList.remove("active")
+        );
+        button.classList.add("active");
+      });
+    });
+
+    // Prevent input focus and blinking cursor on cells
+    board.addEventListener("mousedown", (e) => {
+      if (e.target.classList.contains("sudoku-cell")) {
+        e.preventDefault();
+      }
+    });
+
+    // Cell click sets/clears value based on selectedNumber
+    board.addEventListener("click", (e) => {
+        if (e.target.classList.contains("sudoku-cell") && selectedNumber) {
+            if (e.target.value === selectedNumber) {
+            e.target.value = "";
+            } else {
+            e.target.value = selectedNumber;
+            
+            checkBoardFullAndClearRipple(); // Checks if the board is filled and clears it
+            updateNumberPickerAvailability();
+            }
+        }
+    });
+
+    // Sudoku generator and solver implementation
+
+    // Utility: check if num can be placed at (row, col) in board
+    function canPlace(board, row, col, num) {
+      for (let x = 0; x < 9; x++) {
+        if (board[row][x] === num) return false;
+        if (board[x][col] === num) return false;
+      }
+      const startRow = Math.floor(row / 3) * 3;
+      const startCol = Math.floor(col / 3) * 3;
+      for (let r = startRow; r < startRow + 3; r++) {
+        for (let c = startCol; c < startCol + 3; c++) {
+          if (board[r][c] === num) return false;
+        }
+      }
+      return true;
+    }
+
+    // Solve Sudoku using backtracking
+    function solveSudoku(board) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (board[row][col] === 0) {
+            for (let num = 1; num <= 9; num++) {
+              if (canPlace(board, row, col, num)) {
+                board[row][col] = num;
+                if (solveSudoku(board)) return true;
+                board[row][col] = 0;
+              }
+            }
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    // Generate a fully solved Sudoku board
+    function generateFullBoard() {
+      const board = Array.from({ length: 9 }, () => Array(9).fill(0));
+
+      function fill() {
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            if (board[row][col] === 0) {
+              const numbers = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+              for (const num of numbers) {
+                if (canPlace(board, row, col, num)) {
+                  board[row][col] = num;
+                  if (fill()) return true;
+                  board[row][col] = 0;
+                }
+              }
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+      fill();
+      return board;
+    }
+
+    // Shuffle array utility
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Count number of solutions to check uniqueness
+    function countSolutions(board, limit = 2) {
+      let count = 0;
+
+      function backtrack(b) {
+        if (count >= limit) return;
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            if (b[row][col] === 0) {
+              for (let num = 1; num <= 9; num++) {
+                if (canPlace(b, row, col, num)) {
+                  b[row][col] = num;
+                  backtrack(b);
+                  b[row][col] = 0;
+                }
+              }
+              return;
+            }
+          }
+        }
+        count++;
+      }
+
+      backtrack(board.map((r) => r.slice()));
+      return count;
+    }
+
+    // Remove numbers while ensuring unique solution and at least 17 clues
+    function digHoles(board) {
+      const holes = 81 - 30; // Aim for ~30 clues (harder than 17 for practical)
+      let attempts = 0;
+      while (attempts < holes) {
+        const row = Math.floor(Math.random() * 9);
+        const col = Math.floor(Math.random() * 9);
+        if (board[row][col] === 0) continue;
+        const backup = board[row][col];
+        board[row][col] = 0;
+
+        // Check uniqueness
+        const solutions = countSolutions(board, 2);
+        if (solutions !== 1) {
+          board[row][col] = backup; // revert
+          attempts++;
+        } else {
+          attempts++;
+        }
+      }
+      return board;
+    }
+
+    // Fill the UI board with given 2D array
+    function fillUI(boardData) {
+      const cells = document.querySelectorAll(".sudoku-cell");
+      for (let i = 0; i < 81; i++) {
+        const r = Math.floor(i / 9);
+        const c = i % 9;
+        const val = boardData[r][c];
+        cells[i].value = val === 0 ? "" : val;
+      }
+    }
+
+    // Generate and display a new puzzle
+    function generateNewPuzzle() {
+      let fullBoard = generateFullBoard();
+      let puzzle = JSON.parse(JSON.stringify(fullBoard));
+      puzzle = digHoles(puzzle);
+      fillUI(puzzle);
+    }
+
+    function checkBoardFullAndClearRipple() {
+        const cells = document.querySelectorAll('.sudoku-cell');
+        // Check if all cells have value
+        const allFilled = Array.from(cells).every(cell => cell.value.trim() !== '');
+        if (allFilled) {
+                // Add ripple class to each cell to start animation
+                cells.forEach(cell => cell.classList.add('ripple'));
+
+                // After animation duration, clear all cells and remove ripple class
+                setTimeout(() => {
+                    cells.forEach(cell => {
+                        cell.classList.remove('ripple');
+                        cell.value = '';
+                    });
+
+                    generateNewPuzzle();
+                    updateNumberPickerAvailability();
+                }, 600);
+        }
+    }
+
+    function updateNumberPickerAvailability() {
+        const cells = document.querySelectorAll('.sudoku-cell');
+        const subgridNumbers = Array.from({ length: 9 }, () => new Set());
+
+        cells.forEach((cell, index) => {
+            const value = cell.value.trim();
+            if (value) {
+                const row = Math.floor(index / 9);
+                const col = index % 9;
+                const gridIndex = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+                subgridNumbers[gridIndex].add(value);
+            }
+        });
+
+        const numberButtons = document.querySelectorAll('.num-button:not(#new-puzzle)');
+
+        numberButtons.forEach((btn) => {
+            const num = btn.textContent.trim();
+            const usedInAllGrids = subgridNumbers.every(set => set.has(num));
+
+            if (usedInAllGrids) {
+                btn.disabled = true;
+                btn.classList.add('disabled-num');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('disabled-num');
+            }
+        });
+    }
+
+    // Generate initial puzzle on page load
+    generateNewPuzzle();
+    updateNumberPickerAvailability();
+  </script>
+</body>
+</html>

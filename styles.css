@@ -1,0 +1,158 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Global dark mode base */
+html, body {
+  height: 100%;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 700;
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+/* Wrapper to center with margin */
+.sudoku-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 40px 0;
+  gap: 20px;
+}
+
+/* Number picker styling */
+.number-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+  gap: 8px;
+}
+
+.num-button {
+  padding: 10px 15px;
+  color: #ffffff;
+  font-size: 1.2rem;
+  background-color: #2e2e2e;
+  border: 2px solid #7bdcb5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.num-button:hover {
+  background-color: #3a3a3a;
+}
+
+.num-button.active {
+  background-color: #7bdcb5;
+  color: #000;
+}
+
+/* Sudoku board grid */
+.sudoku-board {
+  display: grid;
+  width: 35vw;
+  aspect-ratio: 1 / 1;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  border: 10px solid #7bdcb5;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Individual cell styling */
+.sudoku-cell {
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+  text-align: center;
+  font-size: 1.2rem;
+  border: none;
+  border-right: 2px solid #333;
+  border-bottom: 2px solid #333;
+  outline: none;
+  background-color: #2a2a2a;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sudoku-cell:focus {
+  background-color: #333;
+  border-color: #7bdcb5;
+}
+
+/* Remove last column's and row's extra borders */
+.sudoku-cell:nth-child(9n) {
+  border-right: none;
+}
+.sudoku-cell:nth-last-child(-n + 9) {
+  border-bottom: none;
+}
+
+/* Thicker borders for 3x3 subgrids */
+.sudoku-cell:nth-child(3n) {
+  border-right: 3px solid #7bdcb5;
+}
+.sudoku-cell:nth-child(n + 19):nth-child(-n + 27),
+.sudoku-cell:nth-child(n + 46):nth-child(-n + 54),
+.sudoku-cell:nth-child(n + 73) {
+  border-bottom: 3px solid #7bdcb5;
+}
+
+.refresh-button {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #2e2e2e;
+  border: 3px solid #7bdcb5;  /* Keep the mint green border */
+  transition: background-color 0.2s ease, stroke 0.2s ease;
+  cursor: pointer;
+}
+
+.refresh-button svg {
+  stroke: #ffffff;
+  transition: stroke 0.2s ease;
+}
+
+.refresh-button:hover {
+  background-color: #7bdcb5;
+}
+
+.refresh-button:hover svg {
+  stroke: #7bdcb5;
+}
+
+@keyframes rippleClear {
+  0% {
+    box-shadow: 0 0 0 0 rgba(123, 220, 181, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(123, 220, 181, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(123, 220, 181, 0);
+  }
+}
+
+.sudoku-cell.ripple {
+  animation: rippleClear 0.6s ease forwards;
+}
+
+.disabled-num {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
