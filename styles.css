@@ -65,7 +65,7 @@ html, body {
   border-radius: 12px;
   background-color: #1e1e1e;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px #00e78b;
 }
 
 /* Individual cell styling */
@@ -74,7 +74,7 @@ html, body {
   height: 100%;
   color: #ffffff;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 2rem;
   border: none;
   border-right: 2px solid #333;
   border-bottom: 2px solid #333;
@@ -117,7 +117,7 @@ html, body {
   justify-content: center;
   align-items: center;
   background-color: #2e2e2e;
-  border: 3px solid #7bdcb5;  /* Keep the mint green border */
+  border: 3px solid #7bdcb5;
   transition: background-color 0.2s ease, stroke 0.2s ease;
   cursor: pointer;
 }
@@ -132,19 +132,19 @@ html, body {
 }
 
 .refresh-button:hover svg {
-  stroke: #7bdcb5;
+  stroke: #ffffff;
 }
 
 @keyframes rippleClear {
-  0% {
-    box-shadow: 0 0 0 0 rgba(123, 220, 181, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 20px rgba(123, 220, 181, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(123, 220, 181, 0);
-  }
+0% {
+  box-shadow: 0 0 0 0 rgba(123, 220, 181, 0.7);
+}
+70% {
+  box-shadow: 0 0 0 20px rgba(123, 220, 181, 0);
+}
+100% {
+  box-shadow: 0 0 0 0 rgba(123, 220, 181, 0);
+}
 }
 
 .sudoku-cell.ripple {
@@ -156,3 +156,17 @@ html, body {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+.signature {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  color: #7bdcb5;
+  float: right;
+  margin-left: 15%;
+  height: 60%;
+  width: 4vw;
+  font-size: 5rem;
+  text-shadow: 0 0 20px #00e78b;
+  text-align: center;
+}
+

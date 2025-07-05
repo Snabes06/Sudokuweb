@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <title>Sudoku Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <title>Sudoku board</title>
   <!-- Link to external CSS -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -40,12 +40,13 @@
       </button>
     </div>
     <div class="sudoku-board"></div>
+     <div class="signature">SNABES</div>
   </div>
   <script>
     const board = document.querySelector(".sudoku-board");
     let selectedNumber = "";
 
-    // Create 81 read-only inputs
+    // Create 81 sudoku cells
     for (let i = 0; i < 81; i++) {
       const cell = document.createElement("input");
       cell.type = "text";
@@ -82,6 +83,9 @@
       }
     });
 
+
+    let fail = 0
+
     // Cell click sets/clears value based on selectedNumber
     board.addEventListener("click", (e) => {
         if (e.target.classList.contains("sudoku-cell") && selectedNumber) {
@@ -89,7 +93,7 @@
             e.target.value = "";
             } else {
             e.target.value = selectedNumber;
-            
+
             checkBoardFullAndClearRipple(); // Checks if the board is filled and clears it
             updateNumberPickerAvailability();
             }
