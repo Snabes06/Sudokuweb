@@ -43,80 +43,104 @@
      <div class="signature">SNABES</div>
   </div>
   <script>
-    const board = document.querySelector(".sudoku-board");
-    let selectedNumber = "";
 
-    // Create 81 sudoku cells
-    for (let i = 0; i < 81; i++) {
-      const cell = document.createElement("input");
-      cell.type = "text";
-      cell.maxLength = 1;
-      cell.className = "sudoku-cell";
-      cell.readOnly = true;
-      board.appendChild(cell);
-    }
+  const board = document.querySelector(".sudoku-board");
+  let selectedNumber = "";
 
-    // Number picker logic
-    document.querySelectorAll(".num-button").forEach((button) => {
-      button.addEventListener("click", () => {
-        if (button.id === "new-puzzle") {
-          generateNewPuzzle();
-          updateNumberPickerAvailability();
-          selectedNumber = "";
-          document.querySelectorAll(".num-button").forEach((btn) =>
-            btn.classList.remove("active")
-          );
-          return;
-        }
-        selectedNumber = button.textContent;
+  // Create 81 sudoku cells
+  for (let i = 0; i < 81; i++) {
+    const cell = document.createElement("input");
+    cell.type = "text";
+    cell.maxLength = 1;
+    cell.className = "sudoku-cell";
+    cell.readOnly = true;
+    board.appendChild(cell);
+  }
+
+  // Number picker logic
+  document.querySelectorAll(".num-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.id === "new-puzzle") {
+        generateNewPuzzle();
+        updateNumberPickerAvailability();
+        selectedNumber = "";
         document.querySelectorAll(".num-button").forEach((btn) =>
           btn.classList.remove("active")
         );
-        button.classList.add("active");
-      });
-    });
-
-    // Prevent input focus and blinking cursor on cells
-    board.addEventListener("mousedown", (e) => {
-      if (e.target.classList.contains("sudoku-cell")) {
-        e.preventDefault();
+        return;
       }
+      selectedNumber = button.textContent;
+      document.querySelectorAll(".num-button").forEach((btn) =>
+        btn.classList.remove("active")
+      );
+      button.classList.add("active");
     });
+  });
 
-
-    let fail = 0
-
-    // Cell click sets/clears value based on selectedNumber
-    board.addEventListener("click", (e) => {
-        if (e.target.classList.contains("sudoku-cell") && selectedNumber) {
-            if (e.target.value === selectedNumber) {
-            e.target.value = "";
-            } else {
-            e.target.value = selectedNumber;
-
-            checkBoardFullAndClearRipple(); // Checks if the board is filled and clears it
-            updateNumberPickerAvailability();
-            }
-        }
-    });
-
-    // Sudoku generator and solver implementation
-
-    // Utility: check if num can be placed at (row, col) in board
-    function canPlace(board, row, col, num) {
-      for (let x = 0; x < 9; x++) {
-        if (board[row][x] === num) return false;
-        if (board[x][col] === num) return false;
-      }
-      const startRow = Math.floor(row / 3) * 3;
-      const startCol = Math.floor(col / 3) * 3;
-      for (let r = startRow; r < startRow + 3; r++) {
-        for (let c = startCol; c < startCol + 3; c++) {
-          if (board[r][c] === num) return false;
-        }
-      }
-      return true;
+  // Prevent input focus and blinking cursor on cells
+  board.addEventListener("mousedown", (e) => {
+    if (e.target.classList.contains("sudoku-cell")) {
+      e.preventDefault();
     }
+  });
+
+  let fails = 0
+
+  // Cell click sets/clears value based on selectedNumber
+  board.addEventListener("click", (e) => {
+    if (e.target.classList.contains("sudoku-cell") && selectedNumber) {
+      if (e.target.value === selectedNumber) {
+        e.target.value = "";
+      } else {
+
+        const cells = Array.from(board.children);
+        const board2d = [];
+
+        const index = cells.indexOf(cells.find((cell) =>  cell === e.target));
+        const row = Math.floor(index / 9); // if 9 columns
+        const col = index % 9;
+
+
+        const cols_per_row = 9;
+        for (let i = 0; i < cells.length; i += cols_per_row) {
+          const row2d = cells.slice(i, i + cols_per_row);
+          const row2dI = [];
+          row2d.forEach((e) => {
+            row2dI.push(e.value);
+          });
+          board2d.push(row2dI);
+        }
+
+        if (!canPlace(board2d, row, col, selectedNumber)) {
+            e.target.style.color = "red";
+            fails++;
+        }
+        
+        e.target.value = selectedNumber;
+      
+        checkBoardFullAndClearRipple(); // Checks if the board is filled and clears it
+        updateNumberPickerAvailability();
+      }
+    }
+  });
+
+  // Sudoku generator and solver implementation
+
+  // Utility: check if num can be placed at (row, col) in board
+  function canPlace(board, row, col, num) {
+    for (let x = 0; x < 9; x++) {
+      if (board[row][x] === num) return false;
+      if (board[x][col] === num) return false;
+    }
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let r = startRow; r < startRow + 3; r++) {
+      for (let c = startCol; c < startCol + 3; c++) {
+        if (board[r][c] === num) return false;
+      }
+    }
+    return true;
+  }
 
     // Solve Sudoku using backtracking
     function solveSudoku(board) {
