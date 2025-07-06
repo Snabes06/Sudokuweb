@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <span class="sudoku-time"></span>
   <div class="sudoku-wrapper">
     <div class="number-picker">
       <button class="num-button">1</button>
@@ -61,8 +62,12 @@
   document.querySelectorAll(".num-button").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.id === "new-puzzle") {
-        generateNewPuzzle();
-        updateNumberPickerAvailability();
+        playRippleWaveClear();
+        setTimeout(() => {
+            generateNewPuzzle();
+            updateNumberPickerAvailability();
+            startPuzzleTimer()
+        }, 800);
         selectedNumber = "";
         document.querySelectorAll(".num-button").forEach((btn) =>
           btn.classList.remove("active")
@@ -91,7 +96,10 @@
     if (e.target.classList.contains("sudoku-cell") && selectedNumber) {
       if (e.target.value === selectedNumber) {
         e.target.value = "";
+        e.target.style.color = "white";
       } else {
+
+        e.target.style.color = "white";
 
         const cells = Array.from(board.children);
         const board2d = [];
@@ -225,65 +233,82 @@
 
     // Remove numbers while ensuring unique solution and at least 17 clues
     function digHoles(board) {
-      const holes = 81 - 30; // Aim for ~30 clues (harder than 17 for practical)
-      let attempts = 0;
-      while (attempts < holes) {
-        const row = Math.floor(Math.random() * 9);
-        const col = Math.floor(Math.random() * 9);
-        if (board[row][col] === 0) continue;
-        const backup = board[row][col];
-        board[row][col] = 0;
+        const holes = 81 - 30; // Aim for ~30 clues (harder than 17 for practical)
+        let attempts = 0;
+        while (attempts < holes) {
+          const row = Math.floor(Math.random() * 9);
+          const col = Math.floor(Math.random() * 9);
+          if (board[row][col] === 0) continue;
+          const backup = board[row][col];
+          board[row][col] = 0;
 
-        // Check uniqueness
-        const solutions = countSolutions(board, 2);
-        if (solutions !== 1) {
-          board[row][col] = backup; // revert
-          attempts++;
-        } else {
-          attempts++;
+          // Check uniqueness
+          const solutions = countSolutions(board, 2);
+          if (solutions !== 1) {
+            board[row][col] = backup; // revert
+            attempts++;
+          } else {
+            attempts++;
+          }
         }
-      }
-      return board;
+        console.log("Attempts to create board: " + attempts)
+        return board;
     }
 
     // Fill the UI board with given 2D array
     function fillUI(boardData) {
-      const cells = document.querySelectorAll(".sudoku-cell");
-      for (let i = 0; i < 81; i++) {
-        const r = Math.floor(i / 9);
-        const c = i % 9;
-        const val = boardData[r][c];
-        cells[i].value = val === 0 ? "" : val;
+        const cells = document.querySelectorAll(".sudoku-cell");
+        for (let i = 0; i < 81; i++) {
+          const r = Math.floor(i / 9);
+          const c = i % 9;
+          const val = boardData[r][c];
+          cells[i].value = val === 0 ? "" : val;
+        }
       }
-    }
 
-    // Generate and display a new puzzle
-    function generateNewPuzzle() {
-      let fullBoard = generateFullBoard();
-      let puzzle = JSON.parse(JSON.stringify(fullBoard));
-      puzzle = digHoles(puzzle);
-      fillUI(puzzle);
+      // Generate and display a new puzzle
+      function generateNewPuzzle() {
+        let fullBoard = generateFullBoard();
+        let puzzle = JSON.parse(JSON.stringify(fullBoard));
+        puzzle = digHoles(puzzle);
+        fillUI(puzzle);
     }
 
     function checkBoardFullAndClearRipple() {
-        const cells = document.querySelectorAll('.sudoku-cell');
+        const cells = document.querySelectorAll(".sudoku-cell");
         // Check if all cells have value
         const allFilled = Array.from(cells).every(cell => cell.value.trim() !== '');
         if (allFilled) {
-                // Add ripple class to each cell to start animation
-                cells.forEach(cell => cell.classList.add('ripple'));
-
-                // After animation duration, clear all cells and remove ripple class
-                setTimeout(() => {
-                    cells.forEach(cell => {
-                        cell.classList.remove('ripple');
-                        cell.value = '';
-                    });
-
-                    generateNewPuzzle();
-                    updateNumberPickerAvailability();
-                }, 600);
+            // After animation duration, clear all cells and remove ripple class
+            playRippleWaveClear();
+            setTimeout(() => {
+                  generateNewPuzzle();
+                  updateNumberPickerAvailability();
+                  startPuzzleTimer()
+            }, 800);
         }
+    }
+
+    function playRippleWaveClear() {
+
+          const cells = Array.from(board.children);
+          // Add ripple class to each cell to start animation
+          cells.forEach((cell) =>  {
+
+              const index = cells.indexOf(cell);
+              const row = Math.floor(index / 9); // if 9 columns
+              const col = index % 9;
+              const delay = (row + col) * 40; // 40ms stagger per diagonal'
+
+              setTimeout(() => {
+                  cell.classList.add('wave');
+                  cell.style.color = 'white'
+                  setTimeout(() => {
+                      cell.classList.remove('wave');
+                      cell.value = '';
+                  }, 40); // match animation duration
+              }, delay);
+          });
     }
 
     function updateNumberPickerAvailability() {
@@ -316,9 +341,34 @@
         });
     }
 
+    let seconds = 0;
+
+    function startPuzzleTimer() {
+      if (document.querySelector('.sudoku-time').textContent !== '') {
+          clearInterval(intervalId);
+          seconds = 0;
+      }
+      intervalId = setInterval(() => {
+        seconds++;
+        updateTimeDisplay();
+      }, 1000);
+    }
+
+    function updateTimeDisplay() {
+      document.querySelector('.sudoku-time').textContent = formatTime(seconds);
+    }
+
+    function formatTime(sec) {
+      const hrs = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const secs = String(sec % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
     // Generate initial puzzle on page load
     generateNewPuzzle();
     updateNumberPickerAvailability();
+    startPuzzleTimer()
   </script>
 </body>
 </html>
