@@ -185,13 +185,13 @@ html, body {
   .sudoku-time {
     position: absolute;
     top: 12%;
-    right: 39.5%;
+    right: 42%;
   }
 
   .signature {
     position: absolute;
     top: 5%;
-    right: 80%;
+    right: 69%;
     text-wrap: nowrap;
     height: 45%;
     width: 3vw;
@@ -242,7 +242,7 @@ html, body {
     gap: 2px;
     flex-direction: row;
     position: absolute;
-    bottom: 0;
+    bottom: 5%;
   }
 
   .sudoku-wrapper {
