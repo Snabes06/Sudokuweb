@@ -243,8 +243,6 @@ html, body {
     flex-direction: row;
     position: absolute;
     bottom: 0;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   .sudoku-wrapper {
