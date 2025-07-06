@@ -185,13 +185,13 @@ html, body {
   .sudoku-time {
     position: absolute;
     top: 12%;
-    right: 50%;
+    right: 39.5%;
   }
 
   .signature {
     position: absolute;
     top: 5%;
-    right: 50%;
+    right: 80%;
     text-wrap: nowrap;
     height: 45%;
     width: 3vw;
@@ -231,7 +231,7 @@ html, body {
   }
 
   .num-button {
-    padding: 12px 16px;
+    padding: 6px 9px;
     font-size: 1.2rem;
     border: 2px solid #7bdcb5;
     border-radius: 6px;
@@ -239,12 +239,10 @@ html, body {
 
   .number-picker {
     margin-right: 0;
-    gap: 10px;
+    gap: 2px;
     flex-direction: row;
     position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0;
     flex-wrap: wrap;
     justify-content: center;
   }
