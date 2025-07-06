@@ -177,20 +177,21 @@ html, body {
 .sudoku-time {
   position: absolute;
   top: 10%;
-  right: 42%;
+  right: 50%;
+  text-align: center;
 }
 
 @media (max-width: 480px) {
   .sudoku-time {
     position: absolute;
     top: 15%;
-    right: 42%;
+    right: 50%;
   }
 
   .signature {
     position: absolute;
     top: 5%;
-    right: 65%;
+    right: 50%;
     text-wrap: nowrap;
     height: 45%;
     width: 2vw;
@@ -223,7 +224,7 @@ html, body {
   }
 
   .sudoku-board {
-    width: 80vw;
+    width: 90vw;
     border: 5px solid #7bdcb5;
     border-radius: 6px;
     box-shadow: 0 0 10px #00e78b;
