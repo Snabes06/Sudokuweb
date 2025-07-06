@@ -190,7 +190,7 @@ html, body {
   .signature {
     position: absolute;
     top: 5%;
-    right: 75%;
+    right: 65%;
     text-wrap: nowrap;
     height: 45%;
     width: 2vw;
@@ -199,8 +199,8 @@ html, body {
   }
 
   .refresh-button {
-    width: 22px;
-    height: 22px;
+    width: 32px;
+    height: 32px;
     border: 1.5px solid #7bdcb5;
   }
   
@@ -223,15 +223,15 @@ html, body {
   }
 
   .sudoku-board {
-    width: 60vw;
+    width: 80vw;
     border: 5px solid #7bdcb5;
     border-radius: 6px;
     box-shadow: 0 0 10px #00e78b;
   }
 
   .num-button {
-    padding: 5px 7.5px;
-    font-size: 0.6rem;
+    padding: 7px 9px;
+    font-size: 0.8rem;
     border: 1px solid #7bdcb5;
     border-radius: 3px;
   }
@@ -241,7 +241,7 @@ html, body {
     gap: 4px;
     flex-direction: row;
     position: absolute;
-    bottom: 20%;
+    bottom: 15%;
   }
 
   .sudoku-wrapper {
