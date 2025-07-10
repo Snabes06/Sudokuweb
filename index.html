@@ -47,6 +47,7 @@
 
   const board = document.querySelector(".sudoku-board");
   let selectedNumber = "";
+  let puzzle
 
   // Create 81 sudoku cells
   for (let i = 0; i < 81; i++) {
@@ -54,6 +55,7 @@
     cell.type = "text";
     cell.maxLength = 1;
     cell.className = "sudoku-cell";
+    cell.classList.add(".unselectable");
     cell.readOnly = true;
     board.appendChild(cell);
   }
@@ -251,7 +253,6 @@
             attempts++;
           }
         }
-        console.log("Attempts to create board: " + attempts)
         return board;
     }
 
@@ -262,16 +263,22 @@
           const r = Math.floor(i / 9);
           const c = i % 9;
           const val = boardData[r][c];
-          cells[i].value = val === 0 ? "" : val;
+          if (val === 0) {
+            cells[i].value = "";
+          }
+          else {
+            cells[i].value = val;
+            cells[i].disabled = true;
+          }
         }
       }
 
       // Generate and display a new puzzle
       function generateNewPuzzle() {
         let fullBoard = generateFullBoard();
-        let puzzle = JSON.parse(JSON.stringify(fullBoard));
-        puzzle = digHoles(puzzle);
-        fillUI(puzzle);
+        puzzle = JSON.parse(JSON.stringify(fullBoard))
+        let displayedPuzzle = digHoles(puzzle);
+        fillUI(displayedPuzzle);
     }
 
     function checkBoardFullAndClearRipple() {
@@ -305,6 +312,7 @@
                   cell.style.color = 'white'
                   setTimeout(() => {
                       cell.classList.remove('wave');
+                      cell.disabled = false;
                       cell.value = '';
                   }, 40); // match animation duration
               }, delay);

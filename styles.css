@@ -85,6 +85,16 @@ html, body {
   user-select: none;
 }
 
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
 .sudoku-cell:focus {
   background-color: #333;
   border-color: #7bdcb5;
@@ -191,7 +201,7 @@ html, body {
   .signature {
     position: absolute;
     top: 5%;
-    right: 69%;
+    right: 72%;
     text-wrap: nowrap;
     height: 45%;
     width: 3vw;
