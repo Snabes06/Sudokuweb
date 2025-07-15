@@ -11,6 +11,7 @@
 </head>
 <body>
   <span class="sudoku-time"></span>
+  <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
   <div class="sudoku-wrapper">
     <div class="number-picker">
       <button class="num-button">1</button>
@@ -37,6 +38,9 @@
   const board = document.querySelector('.sudoku-board');
   let selectedNumber = '';
   let solution = [];
+  const audioContext = new AudioContext();
+  let volumeStrength = audioContext.createGain();
+  volumeStrength.connect(audioContext.destination);
 
 
   // Create 81 sudoku cells
@@ -49,6 +53,10 @@
     cell.readOnly = true;
     board.appendChild(cell);
   }
+
+  document.querySelector('#volume').addEventListener('input', (volume) => {
+    volumeStrength.gain.value = volume.target.value;
+  });
 
   // Number picker logic
   document.querySelectorAll('.num-button').forEach((button) => {
@@ -113,12 +121,16 @@
         if (checkPuzzlePlacement(selectedNumber, row, col)) {
             let url = './Audio/Sudoku_Click.wav';
             const audio = new Audio(url);
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(volumeStrength)
             audio.play();
         } else {
             e.target.style.color = 'red';
             fails++;
             let url = './Audio/Sudoku_Error.wav';
             const audio = new Audio(url);
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(volumeStrength)
             audio.play();
         }
         
